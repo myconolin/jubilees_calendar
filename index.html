@@ -1,1 +1,42 @@
-<!-- Trigger rebuild -->// ===== index.html ===== <!DOCTYPE html> <html lang="en"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"> <meta name="description" content="364-Day Solar Calendar based on Book of Jubilees"> <meta name="theme-color" content="#6366f1"> <!-- PWA Meta Tags --> <link rel="manifest" href="/manifest.json"> <meta name="apple-mobile-web-app-capable" content="yes"> <meta name="apple-mobile-web-app-status-bar-style" content="default"> <meta name="apple-mobile-web-app-title" content="Jubilees Calendar"> <link rel="apple-touch-icon" href="/icon-192.png"> <!-- Icons --> <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png"> <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png"> <title>Jubilees Calendar - 364 Day Solar Calendar</title> <!-- Tailwind CSS CDN --> <script src="https://cdn.tailwindcss.com"></script> <!-- React CDN --> <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script> <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script> <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script> <style> / Custom styles for better mobile experience / body { margin: 0; padding: 0; overflow-x: hidden; -webkit-tap-highlight-color: transparent; } .app-container { min-height: 100vh; min-height: 100dvh; / Dynamic viewport height / touch-action: manipulation; } / Prevent zoom on input focus / input, textarea, select { font-size: 16px; } / Smooth scrolling / html { scroll-behavior: smooth; } / Loading spinner / .loading-spinner { border: 3px solid #f3f3f3; border-top: 3px solid #6366f1; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; } @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } } </style> </head> <body> <div id="root"> <!-- Loading state --> <div class="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50"> <div class="text-center"> <div class="loading-spinner mx-auto mb-4"></div> <p class="text-gray-600">Loading Jubilees Calendar...</p> </div> </div> </div> <!-- Your React component would be inserted here --> <script type="text/babel"> // React component would go here // For now, we'll just show a placeholder function App() { return React.createElement('div', { className: 'app-container flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50' }, React.createElement('div', { className: 'text-center' }, React.createElement('h1', { className: 'text-3xl font-bold text-gray-900 mb-4' }, 'Jubilees Calendar'), React.createElement('p', { className: 'text-gray-600' }, 'PWA Setup Complete - Ready for React Component') ) ); } ReactDOM.render(React.createElement(App), document.getElementById('root')); </script> <script> // Service Worker Registration if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('/sw.js') .then(registration => { console.log('SW registered: ', registration); // Request persistent storage if ('storage' in navigator && 'persist' in navigator.storage) { navigator.storage.persist().then(granted => { console.log('Persistent storage granted:', granted); }); } }) .catch(registrationError => { console.log('SW registration failed: ', registrationError); }); }); } // Install prompt handling let deferredPrompt; window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; console.log('Install prompt available'); }); // Notification permission request if ('Notification' in window && Notification.permission === 'default') { Notification.requestPermission().then(permission => { console.log('Notification permission:', permission); }); } // Online/offline status window.addEventListener('online', () => { console.log('App is online'); }); window.addEventListener('offline', () => { console.log('App is offline'); }); </script> </body> </html>
+{
+  "name": "Jubilees Solar Calendar",
+  "short_name": "Jubilees Calendar",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}self.addEventListener("install", event => {
+  event.waitUntil(
+    caches.open("jubilees-calendar").then(cache => {
+      return cache.addAll([
+        "./index.html",
+        "./manifest.json"
+      ]);
+    })
+  );
+});
+
+self.addEventListener("fetch", event => {
+  event.respondWith(
+    caches.match(event.request).then(response => {
+      return response || fetch(event.request);
+    })
+  );
+});<link rel="manifest" href="manifest.json">
+<script>
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("sw.js");
+  }
+</script>
